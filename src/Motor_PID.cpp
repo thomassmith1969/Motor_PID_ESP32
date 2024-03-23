@@ -42,21 +42,21 @@ void Motor::set_motor(int dir, int pwm_val)
 {
   pwm_val = constrain(pwm_val, lower_limit, upper_limit);
   if (pwmpin != 0)
-    analogWrite(pwmpin, pwm_val);
+    pwmpwm.write(pwm_val);
   if (dir == 1 && motor_state == 1)
   {
-    (pwmpin != 0) ? digitalWrite(in1, 1) : analogWrite(in1, pwm_val);
-    (pwmpin != 0) ? digitalWrite(in2, 0) : analogWrite(in2, 0);
+    (pwmpin != 0) ? digitalWrite(in1, 1) : in1pwm.write(pwm_val);
+    (pwmpin != 0) ? digitalWrite(in2, 0) : in2pwm.write(0);
   }
   else if (dir == -1 && motor_state == 1)
   {
-    (pwmpin != 0) ? digitalWrite(in1, 0) : analogWrite(in1, 0);
-    (pwmpin != 0) ? digitalWrite(in2, 1) : analogWrite(in2, pwm_val);
+    (pwmpin != 0) ? digitalWrite(in1, 0) : in1pwm.write(0);
+    (pwmpin != 0) ? digitalWrite(in2, 1) : in2pwm.write(pwm_val);
   }
   else
   {
-    (pwmpin != 0) ? digitalWrite(in1, 0) : analogWrite(in1, 0);
-    (pwmpin != 0) ? digitalWrite(in2, 0) : analogWrite(in2, 0);
+    (pwmpin != 0) ? digitalWrite(in1, 0) : in1pwm.write(0);
+    (pwmpin != 0) ? digitalWrite(in2, 0) : in2pwm.write(0);
   }
 }
 

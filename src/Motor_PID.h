@@ -8,6 +8,7 @@
 //   encoder motor control
 #include <Arduino.h>
 #include <math.h>
+#include <ESP32Servo.h>
 
 class Motor
 {
@@ -30,6 +31,9 @@ public:
 
 private:
 	uint8_t enca, encb, in2, in1;
+	ESP32PWM in1pwm;
+	ESP32PWM in2pwm;
+	ESP32PWM pwmpwm;
 	void set_motor(int dir, int pwmVal);
 	void read_encoder();
 	void rising_interrupt(); // function for detecting rising edge
