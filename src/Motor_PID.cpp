@@ -18,10 +18,16 @@ void Motor::init(double kp, double ki, double kd)
   this->ki = ki;
   pinMode(enca, INPUT);
   pinMode(encb, INPUT);
-  if (pwmpin != 0)
-    pinMode(pwmpin, OUTPUT);
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
+  if (pwmpin != 0){
+    pinMode(pwmpin, OUTPUT);
+    pwmpwm.attachPin(pwmpin,1000,10);
+    }
+  else{
+    in1pwm.attachPin(in1,1000,10);
+    in2pwm.attachPin(in2,1000,10);
+  }
   motor_state = 1;
 }
 
