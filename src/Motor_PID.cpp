@@ -8,75 +8,75 @@ static int _currentMotorIndex=-1;
 
 static void changeA0(){
   a_vals[0]=!a_vals[0];
-  positions[0]+=b_vals[0]?1:-1;
+  positions[0]+=b_vals[0]==a_vals[0]?1:-1;
 }
 static void changeB0(){
   b_vals[0]=!b_vals[0];
-  positions[0]+=a_vals[0]?1:-1;
+  positions[0]+=a_vals[0]==b_vals[0]?1:-1;
 }
 static void changeA1(){
   a_vals[1]=!a_vals[1];
-  positions[1]+=b_vals[1]?1:-1;
+  positions[1]+=b_vals[1]==a_vals[0]?1:-1;
 }
 static void changeB1(){
   b_vals[1]=!b_vals[1];
-  positions[1]+=a_vals[1]?1:-1;
+  positions[1]+=a_vals[1]==b_vals[0]?1:-1;
 }
 static void changeA2(){
   a_vals[2]=!a_vals[2];
-  positions[2]+=b_vals[2]?1:-1;
+  positions[2]+=b_vals[2]==a_vals[0]?1:-1;
 }
 static void changeB2(){
   b_vals[2]=!b_vals[2];
-  positions[2]+=a_vals[2]?1:-1;
+  positions[2]+=a_vals[2]==b_vals[0]?1:-1;
 }
 static void changeA3(){
   a_vals[3]=!a_vals[3];
-  positions[3]+=b_vals[3]?1:-1;
+  positions[3]+=b_vals[3]==a_vals[0]?1:-1;
 }
 static void changeB3(){
   b_vals[3]=!b_vals[3];
-  positions[3]+=a_vals[3]?1:-1;
+  positions[3]+=a_vals[3]==b_vals[0]?1:-1;
 }
 static void changeA4(){
   a_vals[4]=!a_vals[4];
-  positions[4]+=b_vals[4]?1:-1;
+  positions[4]+=b_vals[4]==a_vals[0]?1:-1;
 }
 static void changeB4(){
   b_vals[4]=!b_vals[4];
-  positions[4]+=a_vals[4]?1:-1;
+  positions[4]+=a_vals[4]==b_vals[0]?1:-1;
 }
 static void changeA5(){
   a_vals[5]=!a_vals[5];
-  positions[5]+=b_vals[5]?1:-1;
+  positions[5]+=b_vals[5]==a_vals[0]?1:-1;
 }
 static void changeB5(){
   b_vals[5]=!b_vals[5];
-  positions[5]+=a_vals[5]?1:-1;
+  positions[5]+=a_vals[5]==b_vals[0]?1:-1;
 }
 static void changeA6(){
   a_vals[6]=!a_vals[6];
-  positions[6]+=b_vals[6]?1:-1;
+  positions[6]+=b_vals[6]==a_vals[0]?1:-1;
 }
 static void changeB6(){
   b_vals[6]=!b_vals[6];
-  positions[6]+=a_vals[6]?1:-1;
+  positions[6]+=a_vals[6]==b_vals[0]?1:-1;
 }
 static void changeA7(){
   a_vals[7]=!a_vals[7];
-  positions[7]+=b_vals[7]?1:-1;
+  positions[7]+=b_vals[7]==a_vals[0]?1:-1;
 }
 static void changeB7(){
   b_vals[7]=!b_vals[7];
-  positions[7]+=a_vals[7]?1:-1;
+  positions[7]+=a_vals[7]==b_vals[0]?1:-1;
 }
 static void changeA8(){
   a_vals[8]=!a_vals[8];
-  positions[8]+=b_vals[8]?1:-1;
+  positions[8]+=b_vals[8]==a_vals[0]?1:-1;
 }
 static void changeB8(){
   b_vals[8]=!b_vals[8];
-  positions[8]+=a_vals[8]?1:-1;
+  positions[8]+=a_vals[8]==b_vals[0]?1:-1;
 }
 
 
@@ -101,8 +101,10 @@ void Motor::attachEncoders(){
   switch (this->_instanceIndex)
   {
   case 0:
-    attachInterrupt(digitalPinToInterrupt(this->enca),changeA0,CHANGE);
-    attachInterrupt(digitalPinToInterrupt(this->encb),changeB0,CHANGE);
+    attachInterrupt(digitalPinToInterrupt(this->enca),changeA0,RISING);
+    attachInterrupt(digitalPinToInterrupt(this->enca),changeA0,FALLING);
+    attachInterrupt(digitalPinToInterrupt(this->encb),changeB0,FALLING);
+    attachInterrupt(digitalPinToInterrupt(this->encb),changeB0,RISING);
     break;
   case 1:
     attachInterrupt(digitalPinToInterrupt(this->enca),changeA1,CHANGE);
