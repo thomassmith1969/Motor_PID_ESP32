@@ -9,6 +9,8 @@
 #include <Arduino.h>
 #include <math.h>
 #include <ESP32Servo.h>
+#include <ESP32Encoder.h>
+
 
 class Motor
 {
@@ -30,7 +32,7 @@ public:
 
 private:
 	uint8_t enca, encb, in2, in1;
-	int _instanceIndex;
+	ESP32Encoder encoder;
 	ESP32PWM in1pwm;
 	ESP32PWM in2pwm;
 	ESP32PWM pwmpwm;
