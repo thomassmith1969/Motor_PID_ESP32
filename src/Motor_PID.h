@@ -21,7 +21,6 @@ public:
 	void init(double kp, double ki, double kd); // this function initializes pid regulator
 	void turn_on();         // changes motor_state variable to true
 	void turn_off();        // changes motor_state variable to false
-	long posi{ 0 };           // position of rotary encoder \ number of pulses
 	void set_position(double posi = 0);
 	long get_position();
 	void set_target(double target);
@@ -31,12 +30,12 @@ public:
 
 private:
 	uint8_t enca, encb, in2, in1;
+	int _instanceIndex;
 	ESP32PWM in1pwm;
 	ESP32PWM in2pwm;
 	ESP32PWM pwmpwm;
 	void set_motor(int dir, int pwmVal);
-	void read_encoder();
-	void rising_interrupt(); // function for detecting rising edge
+	void attachEncoders();
 	bool buffer{ false };
 	uint8_t pwmpin = 0;
 	int upper_limit = 0, lower_limit = 0;
