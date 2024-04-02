@@ -82,7 +82,8 @@ static void changeB8(){
 
 Motor::Motor(uint8_t enca, uint8_t encb, uint8_t in1, uint8_t in2, uint8_t pwmpin, int lower_limit, int upper_limit)
 {
-  this->_instanceIndex=_currentMotorIndex++;
+  _currentMotorIndex++;
+  this->_instanceIndex=_currentMotorIndex;
   if(this->_instanceIndex>8)throw "Can only have up to 9 instances of motor created";
   this->enca = enca;
   this->encb = encb;
