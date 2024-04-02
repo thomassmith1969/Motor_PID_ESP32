@@ -12,7 +12,7 @@ static void changeA0(){
 }
 static void changeB0(){
   b_vals[0]=!b_vals[0];
-  positions[0]+=a_vals[0]?-1:1;
+  positions[0]+=a_vals[0]?1:-1;
 }
 static void changeA1(){
   a_vals[1]=!a_vals[1];
@@ -20,7 +20,7 @@ static void changeA1(){
 }
 static void changeB1(){
   b_vals[1]=!b_vals[1];
-  positions[1]+=a_vals[1]?-1:1;
+  positions[1]+=a_vals[1]?1:-1;
 }
 static void changeA2(){
   a_vals[2]=!a_vals[2];
@@ -28,7 +28,7 @@ static void changeA2(){
 }
 static void changeB2(){
   b_vals[2]=!b_vals[2];
-  positions[2]+=a_vals[2]?-1:1;
+  positions[2]+=a_vals[2]?1:-1;
 }
 static void changeA3(){
   a_vals[3]=!a_vals[3];
@@ -36,7 +36,7 @@ static void changeA3(){
 }
 static void changeB3(){
   b_vals[3]=!b_vals[3];
-  positions[3]+=a_vals[3]?-1:1;
+  positions[3]+=a_vals[3]?1:-1;
 }
 static void changeA4(){
   a_vals[4]=!a_vals[4];
@@ -44,7 +44,7 @@ static void changeA4(){
 }
 static void changeB4(){
   b_vals[4]=!b_vals[4];
-  positions[4]+=a_vals[4]?-1:1;
+  positions[4]+=a_vals[4]?1:-1;
 }
 static void changeA5(){
   a_vals[5]=!a_vals[5];
@@ -52,7 +52,7 @@ static void changeA5(){
 }
 static void changeB5(){
   b_vals[5]=!b_vals[5];
-  positions[5]+=a_vals[5]?-1:1;
+  positions[5]+=a_vals[5]?1:-1;
 }
 static void changeA6(){
   a_vals[6]=!a_vals[6];
@@ -60,7 +60,7 @@ static void changeA6(){
 }
 static void changeB6(){
   b_vals[6]=!b_vals[6];
-  positions[6]+=a_vals[6]?-1:1;
+  positions[6]+=a_vals[6]?1:-1;
 }
 static void changeA7(){
   a_vals[7]=!a_vals[7];
@@ -68,7 +68,7 @@ static void changeA7(){
 }
 static void changeB7(){
   b_vals[7]=!b_vals[7];
-  positions[7]+=a_vals[7]?-1:1;
+  positions[7]+=a_vals[7]?1:-1;
 }
 static void changeA8(){
   a_vals[8]=!a_vals[8];
@@ -76,7 +76,7 @@ static void changeA8(){
 }
 static void changeB8(){
   b_vals[8]=!b_vals[8];
-  positions[8]+=a_vals[8]?-1:1;
+  positions[8]+=a_vals[8]?1:-1;
 }
 
 
