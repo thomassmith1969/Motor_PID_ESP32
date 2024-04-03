@@ -1,89 +1,46 @@
 #include "Motor_PID.h"
 
 
-static double positions[9];
-static bool a_vals[9];
-static bool b_vals[9];
-static int _currentMotorIndex=-1;
+double positions[10];
+int b_pins[10];
+int _currentMotorIndex=-1;
 
-static void changeA0(){
-  a_vals[0]=!a_vals[0];
-  positions[0]+=(a_vals[0]&(b_vals[0]==a_vals[0]))?1:-1;
+static void step0(){
+  if(digitalRead(b_pins[0])==0)positions[0]++;else positions[0]--; 
 }
-static void changeB0(){
-  b_vals[0]=!b_vals[0];
-  positions[0]+=(b_vals[0]&(a_vals[0]==b_vals[0]))?1:-1;
+static void step1(){
+  if(digitalRead(b_pins[1])==0)positions[1]++;else positions[1]--; 
 }
-static void changeA1(){
-  a_vals[1]=!a_vals[1];
-  positions[1]+=(a_vals[1]&(b_vals[1]==a_vals[1]))?1:-1;
+static void step2(){
+  if(digitalRead(b_pins[2])==0)positions[2]++;else positions[2]--; 
 }
-static void changeB1(){
-  b_vals[1]=!b_vals[1];
-  positions[1]+=(b_vals[1]&(a_vals[1]==b_vals[1]))?1:-1;
+static void step3(){
+  if(digitalRead(b_pins[3])==0)positions[3]++;else positions[3]--; 
 }
-static void changeA2(){
-  a_vals[2]=!a_vals[2];
-  positions[2]+=(a_vals[2]&(b_vals[2]==a_vals[2]))?1:-1;
+static void step4(){
+  if(digitalRead(b_pins[4])==0)positions[4]++;else positions[4]--; 
 }
-static void changeB2(){
-  b_vals[2]=!b_vals[2];
-  positions[2]+=(b_vals[2]&(a_vals[2]==b_vals[2]))?1:-1;
+static void step5(){
+  if(digitalRead(b_pins[5])==0)positions[5]++;else positions[5]--; 
 }
-static void changeA3(){
-  a_vals[3]=!a_vals[3];
-  positions[3]+=(a_vals[3]&(b_vals[3]==a_vals[3]))?1:-1;
+static void step6(){
+  if(digitalRead(b_pins[6])==0)positions[6]++;else positions[6]--; 
 }
-static void changeB3(){
-  b_vals[3]=!b_vals[3];
-  positions[3]+=(b_vals[0]&(a_vals[3]==b_vals[3]))?1:-1;
+static void step7(){
+  if(digitalRead(b_pins[7])==0)positions[7]++;else positions[7]--; 
 }
-static void changeA4(){
-  a_vals[4]=!a_vals[4];
-  positions[4]+=(a_vals[4]&(b_vals[4]==a_vals[4]))?1:-1;
+static void step8(){
+  if(digitalRead(b_pins[8])==0)positions[8]++;else positions[8]--; 
 }
-static void changeB4(){
-  b_vals[4]=!b_vals[4];
-  positions[4]+=(b_vals[4]&(a_vals[4]==b_vals[4]))?1:-1;
-}
-static void changeA5(){
-  a_vals[5]=!a_vals[5];
-  positions[5]+=(a_vals[5]&(b_vals[5]==a_vals[5]))?1:-1;
-}
-static void changeB5(){
-  b_vals[5]=!b_vals[5];
-  positions[5]+=(b_vals[5]&(a_vals[5]==b_vals[5]))?1:-1;
-}
-static void changeA6(){
-  a_vals[6]=!a_vals[6];
-  positions[6]+=(a_vals[6]&(b_vals[6]==a_vals[6]))?1:-1;
-}
-static void changeB6(){
-  b_vals[6]=!b_vals[6];
-  positions[6]+=(b_vals[6]&(a_vals[6]==b_vals[6]))?1:-1;
-}
-static void changeA7(){
-  a_vals[7]=!a_vals[7];
-  positions[7]+=(a_vals[7]&(b_vals[7]==a_vals[7]))?1:-1;
-}
-static void changeB7(){
-  b_vals[7]=!b_vals[7];
-  positions[7]+=(b_vals[7]&(a_vals[7]==b_vals[7]))?1:-1;
-}
-static void changeA8(){
-  a_vals[8]=!a_vals[8];
-  positions[8]+=(a_vals[8]&(b_vals[8]==a_vals[8]))?1:-1;
-}
-static void changeB8(){
-  b_vals[8]=!b_vals[8];
-  positions[8]+=(b_vals[8]&(a_vals[8]==b_vals[8]))?1:-1;
+static void step9(){
+  if(digitalRead(b_pins[9])==0)positions[9]++;else positions[9]--; 
 }
 
 Motor::Motor(uint8_t enca, uint8_t encb, uint8_t in1, uint8_t in2, uint8_t pwmpin, int lower_limit, int upper_limit)
 {
   _currentMotorIndex++;
   this->_instanceIndex=_currentMotorIndex;
-  if(this->_instanceIndex>8)throw "Can only have up to 9 instances of motor created";
+  if(this->_instanceIndex>9)throw "Can only have up to 10 instances of motor created";
   this->enca = enca;
   this->encb = encb;
   this->attachEncoders();
@@ -100,42 +57,44 @@ void Motor::attachEncoders(){
   switch (this->_instanceIndex)
   {
   case 0:
-    attachInterrupt(digitalPinToInterrupt(this->enca),changeA0,RISING);
-    attachInterrupt(digitalPinToInterrupt(this->enca),changeA0,FALLING);
-    attachInterrupt(digitalPinToInterrupt(this->encb),changeB0,FALLING);
-    attachInterrupt(digitalPinToInterrupt(this->encb),changeB0,RISING);
+    b_pins[0]=this->encb;
+    attachInterrupt(digitalPinToInterrupt(this->enca),step0,RISING);
     break;
   case 1:
-    attachInterrupt(digitalPinToInterrupt(this->enca),changeA1,CHANGE);
-    attachInterrupt(digitalPinToInterrupt(this->encb),changeB1,CHANGE);
+    b_pins[1]=this->encb;
+    attachInterrupt(digitalPinToInterrupt(this->enca),step1,RISING);
     break;
   case 2:
-    attachInterrupt(digitalPinToInterrupt(this->enca),changeA2,CHANGE);
-    attachInterrupt(digitalPinToInterrupt(this->encb),changeB2,CHANGE);
+    b_pins[2]=this->encb;
+    attachInterrupt(digitalPinToInterrupt(this->enca),step2,RISING);
     break;
   case 3:
-    attachInterrupt(digitalPinToInterrupt(this->enca),changeA3,CHANGE);
-    attachInterrupt(digitalPinToInterrupt(this->encb),changeB3,CHANGE);
+    b_pins[3]=this->encb;
+    attachInterrupt(digitalPinToInterrupt(this->enca),step3,RISING);
     break;
   case 4:
-    attachInterrupt(digitalPinToInterrupt(this->enca),changeA4,CHANGE);
-    attachInterrupt(digitalPinToInterrupt(this->encb),changeB4,CHANGE);
+    b_pins[4]=this->encb;
+    attachInterrupt(digitalPinToInterrupt(this->enca),step4,RISING);
     break;
   case 5:
-    attachInterrupt(digitalPinToInterrupt(this->enca),changeA5,CHANGE);
-    attachInterrupt(digitalPinToInterrupt(this->encb),changeB5,CHANGE);
+    b_pins[5]=this->encb;
+    attachInterrupt(digitalPinToInterrupt(this->enca),step5,RISING);
     break;
   case 6:
-    attachInterrupt(digitalPinToInterrupt(this->enca),changeA6,CHANGE);
-    attachInterrupt(digitalPinToInterrupt(this->encb),changeB6,CHANGE);
+    b_pins[6]=this->encb;
+    attachInterrupt(digitalPinToInterrupt(this->enca),step6,RISING);
     break;
   case 7:
-    attachInterrupt(digitalPinToInterrupt(this->enca),changeA7,CHANGE);
-    attachInterrupt(digitalPinToInterrupt(this->encb),changeB7,CHANGE);
+    b_pins[7]=this->encb;
+    attachInterrupt(digitalPinToInterrupt(this->enca),step7,RISING);
     break;
   case 8:
-    attachInterrupt(digitalPinToInterrupt(this->enca),changeA8,CHANGE);
-    attachInterrupt(digitalPinToInterrupt(this->encb),changeB8,CHANGE);
+    b_pins[8]=this->encb;
+    attachInterrupt(digitalPinToInterrupt(this->enca),step8,RISING);
+    break;
+  case 9:
+    b_pins[9]=this->encb;
+    attachInterrupt(digitalPinToInterrupt(this->enca),step9,RISING);
     break;
   
   default:
