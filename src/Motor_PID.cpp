@@ -1,119 +1,21 @@
 #include "Motor_PID.h"
 
-
-double positions[10];
-int a_pins[10];
-int b_pins[10];
-int _currentMotorIndex=-1;
-
-static void step0(){
-  if(digitalRead(b_pins[0])==digitalRead(a_pins[0]))positions[0]++;else positions[0]--; 
-}
-static void step1(){
-  if(digitalRead(b_pins[1])==digitalRead(a_pins[1]))positions[1]++;else positions[1]--; 
-}
-static void step2(){
-  if(digitalRead(b_pins[2])==digitalRead(a_pins[2]))positions[2]++;else positions[2]--; 
-}
-static void step3(){
-  if(digitalRead(b_pins[3])==digitalRead(a_pins[3]))positions[3]++;else positions[3]--; 
-}
-static void step4(){
-  if(digitalRead(b_pins[4])==digitalRead(a_pins[4]))positions[4]++;else positions[4]--; 
-}
-static void step5(){
-  if(digitalRead(b_pins[5])==digitalRead(a_pins[5]))positions[5]++;else positions[5]--; 
-}
-static void step6(){
-  if(digitalRead(b_pins[6])==digitalRead(a_pins[6]))positions[6]++;else positions[6]--; 
-}
-static void step7(){
-  if(digitalRead(b_pins[7])==digitalRead(a_pins[7]))positions[7]++;else positions[7]--; 
-}
-static void step8(){
-  if(digitalRead(b_pins[8])==digitalRead(a_pins[8]))positions[8]++;else positions[8]--; 
-}
-static void step9(){
-  if(digitalRead(b_pins[9])==digitalRead(a_pins[9]))positions[9]++;else positions[9]--; 
-}
-
 Motor::Motor(uint8_t enca, uint8_t encb, uint8_t in1, uint8_t in2, uint8_t pwmpin, int lower_limit, int upper_limit)
 {
-  _currentMotorIndex++;
-  this->_instanceIndex=_currentMotorIndex;
-  if(this->_instanceIndex>9)throw "Can only have up to 10 instances of motor created";
   this->enca = enca;
   this->encb = encb;
-  this->attachEncoders();
+  this->encoder.attachHalfQuad(this->enca,this->encb);
   this->in1 = in1;
   this->in2 = in2;
   this->pwmpin = pwmpin;
   this->upper_limit = upper_limit;
   this->lower_limit = lower_limit;
-}
-void Motor::attachEncoders(){
-  pinMode(enca, INPUT);
-  pinMode(encb, INPUT);
-
-  switch (this->_instanceIndex)
-  {
-  case 0:
-    a_pins[0]=this->enca;
-    b_pins[0]=this->encb;
-    attachInterrupt(digitalPinToInterrupt(this->enca),step0,FALLING);
-    break;
-  case 1:
-    a_pins[1]=this->enca;
-    b_pins[1]=this->encb;
-    attachInterrupt(digitalPinToInterrupt(this->enca),step1,FALLING);
-    break;
-  case 2:
-    a_pins[2]=this->enca;
-    b_pins[2]=this->encb;
-    attachInterrupt(digitalPinToInterrupt(this->enca),step2,FALLING);
-    break;
-  case 3:
-    a_pins[3]=this->enca;
-    b_pins[3]=this->encb;
-    attachInterrupt(digitalPinToInterrupt(this->enca),step3,FALLING);
-    break;
-  case 4:
-    a_pins[4]=this->enca;
-    b_pins[4]=this->encb;
-    attachInterrupt(digitalPinToInterrupt(this->enca),step4,FALLING);
-    break;
-  case 5:
-    a_pins[5]=this->enca;
-    b_pins[5]=this->encb;
-    attachInterrupt(digitalPinToInterrupt(this->enca),step5,FALLING);
-    break;
-  case 6:
-    a_pins[6]=this->enca;
-    b_pins[6]=this->encb;
-    attachInterrupt(digitalPinToInterrupt(this->enca),step6,FALLING);
-    break;
-  case 7:
-    a_pins[7]=this->enca;
-    b_pins[7]=this->encb;
-    attachInterrupt(digitalPinToInterrupt(this->enca),step7,FALLING);
-    break;
-  case 8:
-    a_pins[8]=this->enca;
-    b_pins[8]=this->encb;
-    attachInterrupt(digitalPinToInterrupt(this->enca),step8,FALLING);
-    break;
-  case 9:
-    a_pins[9]=this->enca;
-    b_pins[9]=this->encb;
-    attachInterrupt(digitalPinToInterrupt(this->enca),step9,FALLING);
-    break;
-  
-  default:
-    throw "invalid instanceIndex";
-  }
+  pwmFactory(this->in1);
+  pwmFactory(this->in2);
 }
 void Motor::init(double kp, double ki, double kd)
 {
+  
   this->kp = kp;
   this->kd = kd;
   this->ki = ki;
@@ -121,14 +23,22 @@ void Motor::init(double kp, double ki, double kd)
   pinMode(in2, OUTPUT);
   if (pwmpin != 0){
     pinMode(pwmpin, OUTPUT);
-    pwmpwm.attachPin(pwmpin,1000,10);
+   // pwmpwm.attachPin(pwmpin,1000,10);
     }
   else{
-    in1pwm.attachPin(in1,1000,10);
-    in2pwm.attachPin(in2,1000,10);
+   // in1pwm.attachPin(in1,1000,10);
+   // in2pwm.attachPin(in2,1000,10);
   }
   motor_state = 1;
+	ESP32PWM::allocateTimer(0);
+	ESP32PWM::allocateTimer(1);
+	ESP32PWM::allocateTimer(2);
+	ESP32PWM::allocateTimer(3);
+
 }
+
+int lastPwr=0;
+int lastDir=1;
 
 void Motor::set_motor(int dir, int pwm_val)
 {
@@ -137,18 +47,45 @@ void Motor::set_motor(int dir, int pwm_val)
     pwmpwm.write(pwm_val);
   if (dir == 1 && motor_state == 1)
   {
-    (pwmpin != 0) ? digitalWrite(in1, 1) : in1pwm.write(pwm_val);
-    (pwmpin != 0) ? digitalWrite(in2, 0) : in2pwm.write(0);
+    if(pwmpin>0){
+      digitalWrite(in1, 1);
+      digitalWrite(in2, 0);
+      
+    }else{
+      analogWrite(in1,pwm_val);
+      digitalWrite(in2,0);
+    }
+    // (pwmpin != 0) ? digitalWrite(in1, 1) : in1pwm.write(pwm_val);
+    // (pwmpin != 0) ? digitalWrite(in2, 0) : in2pwm.write(0);
   }
   else if (dir == -1 && motor_state == 1)
   {
-    (pwmpin != 0) ? digitalWrite(in1, 0) : in1pwm.write(0);
-    (pwmpin != 0) ? digitalWrite(in2, 1) : in2pwm.write(pwm_val);
+    if(pwmpin>0){
+      analogWrite(pwmpin,pwm_val);
+      digitalWrite(in1, 0);
+      digitalWrite(in2, 1);
+    }else{
+      analogWrite(in2,pwm_val);
+      digitalWrite(in1,0);
+    }
+    // (pwmpin <1) ? digitalWrite(in1, 0) : in1pwm.write(0);
+    // (pwmpin <1) ? digitalWrite(in2, 1) : in2pwm.write(pwm_val);
   }
   else
   {
-    (pwmpin != 0) ? digitalWrite(in1, 0) : in1pwm.write(0);
-    (pwmpin != 0) ? digitalWrite(in2, 0) : in2pwm.write(0);
+    if(pwmpin>0){
+      pwmpwm.write(pwm_val);
+      digitalWrite(in1, 0);
+      digitalWrite(in2, 0);
+    }
+    else{
+      digitalWrite(in1,0);
+      digitalWrite(in2,0);
+
+    }
+
+    // (pwmpin <1) ? digitalWrite(in1, 0) : in1pwm.write(0);
+    // (pwmpin <1) ? digitalWrite(in2, 0) : in2pwm.write(0);
   }
 }
 
@@ -160,7 +97,7 @@ void Motor::start()
   double delta_t = ((double)(curr_t - prev_t)) / (1.0e6);
   prev_t = curr_t;
 
-  long e = positions[this->_instanceIndex] - target;
+  long e = encoder.getCount() - target;
 
   double dedt = ((double)e - eprev) / (delta_t);
 
@@ -189,9 +126,7 @@ void Motor::start()
     turn_on();
     target_is_reached = false;
   }
-
   set_motor(dir, pwr);
-
   eprev = e;
 }
 
@@ -211,12 +146,13 @@ void Motor::turn_off()
 
 void Motor::set_position(double position)
 {
-  positions[this->_instanceIndex] = (long)round(position);
+  encoder.setCount((int64_t)position);
+//  positions[this->_instanceIndex] = (long)round(position);
 }
 
 long Motor::get_position()
 {
-  return positions[this->_instanceIndex];
+  return encoder.getCount();
 }
 
 void Motor::set_target(double target)
